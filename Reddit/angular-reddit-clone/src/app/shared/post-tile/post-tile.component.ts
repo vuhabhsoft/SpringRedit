@@ -1,9 +1,8 @@
 import { Component, OnInit, ViewEncapsulation, Input } from '@angular/core';
-import { PostService } from '../post.service';
 import { PostModel } from '../post-model';
 import { faComments } from '@fortawesome/free-solid-svg-icons';
 import { Router } from '@angular/router';
-import { HeaderComponent } from 'src/app/header/header.component';
+
 
 @Component({
   selector: 'app-post-tile',

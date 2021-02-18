@@ -16,14 +16,12 @@ export class AuthService {
   @Output() username: EventEmitter<string> = new EventEmitter();
 
   refreshTokenPayload = {
-    refreshToken: this.localStorage.retrieve('refreshtoken'),
-    username: this.localStorage.retrieve('username')
-  }
+    refreshToken: this.getRefreshToken(),
+    username: this.getUserName()
+}
 
-  constructor(private httpClient: HttpClient,
-    private localStorage: LocalStorageService) {
-  }
-
+constructor(private httpClient: HttpClient, private localStorage: LocalStorageService) {
+}
   signup(signupRequestPayload: SignupRequestPayload): Observable<any> {
     return this.httpClient.post('http://localhost:8080/api/auth/signup', signupRequestPayload, { responseType: 'text' });
   }
@@ -47,18 +45,18 @@ export class AuthService {
   }
 
   refreshToken() {
-    return this.httpClient.post<LoginResponse>('http://localhost:8080/api/auth/refresh/token',
-      this.refreshTokenPayload)
+    const refreshTokenPayload = {
+      refreshToken: this.getRefreshToken(),
+      username: this.getUserName()
+    }
+    return this.httpClient.post<LoginResponse>('http://localhost:8080/api/auth/refresh/token',refreshTokenPayload)
       .pipe(tap(response => {
-        this.localStorage.clear('authenticationToken');
-        this.localStorage.clear('expiresAt');
-
-        this.localStorage.store('authenticationToken',
-          response.authenticationToken);
+        this.localStorage.store('authenticationToken', response.authenticationToken);
         this.localStorage.store('expiresAt', response.expiresAt);
-        console.log("Refreshed");
+        console.log("refreshed");
       }));
-  }
+
+}
 
   logout() {
     this.httpClient.post('http://localhost:8080/api/auth/logout', this.refreshTokenPayload,
